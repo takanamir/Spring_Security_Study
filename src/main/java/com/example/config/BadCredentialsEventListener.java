@@ -30,8 +30,13 @@ public class BadCredentialsEventListener {
 		// ユーザーIDの取得
 		String userId = event.getAuthentication().getName();
 
+		// テナントIDの取得
+		AppUserDetails user = (AppUserDetails) event.getAuthentication().getPrincipal();
+		String tenantId = user.getTenantId();
+
 		// ユーザー情報の取得
-		AppUserDetails user = (AppUserDetails) service.loadUserByUsername(userId);
+		// AppUserDetails user = (AppUserDetails) service.loadUserByUsername(userId);
+		user = (AppUserDetails) service.loadUserByUsernameAndTenantId(userId, tenantId);
 
 		// ログイン失敗回数を1増やす
 		int loginMissTime = user.getLoginMissTimes() + 1;
