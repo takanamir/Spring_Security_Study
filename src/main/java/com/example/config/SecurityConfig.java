@@ -46,8 +46,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	// ユーザーのロールを取得するSQL文
 	private static final String ROLE_SQL = "SELECT" + "    m_user.user_id," + "    role.role_name" + " FROM"
-			+ "    m_user INNER JOIN t_user_role AS user_role" + " ON" + "    m_user.user_id = user_role.user_id"
-			+ "    INNER JOIN m_role AS role" + " ON" + "    user_role.role_id = role.role_id" + " WHERE"
+			+ "    m_user INNER JOIN t_user_role AS userrole" + " ON" + "    m_user.user_id = userrole.user_id"
+			+ "    INNER JOIN m_role AS role" + " ON" + "    userrole.role_id = role.role_id" + " WHERE"
 			+ "    m_user.user_id = ?";
 
 	@Override

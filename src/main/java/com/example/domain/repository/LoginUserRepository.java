@@ -32,6 +32,10 @@ public class LoginUserRepository {
 	private static final String UPDATE_PASSWORD_SQL = "UPDATE m_user" + " SET password = ?,"
 			+ "     pass_update_date = ?" + " WHERE user_id = ?";
 
+	/** ログイン失敗回数と有効/無効フラグを更新するSQL */
+	private static final String UPDATE_LOCK_SQL = "UPDATE m_user" + " SET login_miss_times = ?," + "     unlock = ?"
+			+ " WHERE user_id = ?";
+
 	/**
 	 * ユーザー情報を取得して、UserDetailsを生成するメソッド.
 	 */
@@ -104,6 +108,16 @@ public class LoginUserRepository {
 	public int updatePassword(String userId, String password, Date passwordUpdateDate) {
 		// パスワード更新
 		int result = jdbc.update(UPDATE_PASSWORD_SQL, password, passwordUpdateDate, userId);
+
+		return result;
+	}
+
+	/**
+	 * ログイン失敗回数と有効/無効フラグを更新する.
+	 */
+	public int updateUnlock(String userId, int loginMissTime, boolean unlock) {
+		// 失敗回数の更新
+		int result = jdbc.update(UPDATE_LOCK_SQL, loginMissTime, unlock, userId);
 
 		return result;
 	}

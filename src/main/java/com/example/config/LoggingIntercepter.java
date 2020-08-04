@@ -8,13 +8,14 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Component("LoggingIntercepter")
 @Slf4j
-public class LoggingIntercepter extends HandlerInterceptorAdapter {
+public class LoggingIntercepter implements HandlerInterceptor {
 	/** USER_IDのキー名 */
 	private static final String USER_ID = "USER_ID";
 
@@ -49,9 +50,17 @@ public class LoggingIntercepter extends HandlerInterceptorAdapter {
 	}
 
 	@Override
-	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
-			Exception ex) {
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) {
+		// キーの削除
 		MDC.remove(SESSION_ID);
 		MDC.remove(USER_ID);
+	}
+
+	@Override
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
+			Exception ex) {
+//		MDC.remove(SESSION_ID);
+//		MDC.remove(USER_ID);
 	}
 }
