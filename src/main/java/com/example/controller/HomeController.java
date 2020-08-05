@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HomeController {
 	@GetMapping("/home")
-	@PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_GENERAL')") // いずれかの権限
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_GENERAL')") // いずれかの権限
 	public String getHome(Model model, @AuthenticationPrincipal AppUserDetails user) {
 		log.info("HomeController Start");
 
@@ -34,7 +34,7 @@ public class HomeController {
 	// @AuthenticationPrincipalを使わない場合
 	// =============================================
 	@GetMapping("/home2")
-	@PreAuthorize("hasAuthority('ROLE_ADMIN')") // ROLE_ADMIN権限のみ
+	@PreAuthorize("hasRole('ROLE_ADMIN')") // ROLE_ADMIN権限のみ
 	public String getHome2(Model model, Principal principal) {
 		// ログインユーザー情報の取得(その1)
 		Authentication authentication = (Authentication) principal;

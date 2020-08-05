@@ -26,7 +26,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	@Qualifier("SuccessHandler")
-	private AuthenticationSuccessHandler successHandler;
+	AuthenticationSuccessHandler successHandler;
 
 	@Autowired
 	@Qualifier("UserDetailsServiceImpl")
@@ -60,17 +60,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		// 直リンクの禁止＆ログイン不要ページの設定
 		http.authorizeRequests().antMatchers("/login").permitAll() // ログインページは直リンクOK
+				.antMatchers("/error/session").permitAll() // セッションエラー
 				.anyRequest().authenticated(); // それ以外は直リンク禁止
+
+		// レスポンスヘッダーの設定
+		http.headers().contentSecurityPolicy("default-src 'self'");
+
+		// httpsにリダイレクト
+		http.requiresChannel().antMatchers("/login*").requiresSecure();
 
 		// ログイン処理の実装
 		http.formLogin()
-				// .loginProcessingUrl("/login") //ログイン処理のパス
+//                .loginProcessingUrl("/login") //ログイン処理のパス
 				.loginPage("/login"); // ログインページの指定
-		// .failureUrl("/login?error") //ログイン失敗時の遷移先
-		// .usernameParameter("userId") //ログインページのユーザーID
-		// .passwordParameter("password") //ログインページのパスワード
-		// .defaultSuccessUrl("/home", true) //ログイン成功後の遷移先
-		// .successHandler(successHandler);
+//                .failureUrl("/login?error") //ログイン失敗時の遷移先
+//                .usernameParameter("userId") //ログインページのユーザーID
+//                .passwordParameter("password") //ログインページのパスワード
+//                //.defaultSuccessUrl("/home", true); //ログイン成功後の遷移先
+//                .successHandler(successHandler);
 
 		// ログインフィルターの設定
 		CustomAuthenticationFilter filter = new CustomAuthenticationFilter();
@@ -80,9 +87,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		filter.setAuthenticationSuccessHandler(successHandler);
 		http.addFilterBefore(filter, CustomAuthenticationFilter.class);
 
+		// セッション管理
+		http.sessionManagement().invalidSessionUrl("/error/session"); // セッションエラー後の遷移先
+
 		// ログアウト処理
 		http.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutUrl("/logout")
-				.logoutSuccessUrl("/login");
+				.logoutSuccessUrl("/login").deleteCookies("JSESSIONID");
 	}
 
 	@Override
@@ -93,7 +103,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //              .usersByUsernameQuery(USER_SQL) //ユーザーの取得
 //              .authoritiesByUsernameQuery(ROLE_SQL) //ロールの取得
 //              .passwordEncoder(passwordEncoder()); //パスワードの復号
-//		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+
+//        auth
+//            .userDetailsService(userDetailsService)
+//            .passwordEncoder(passwordEncoder());
 
 		// 独自認証
 		auth.authenticationProvider(authenticationProvider);

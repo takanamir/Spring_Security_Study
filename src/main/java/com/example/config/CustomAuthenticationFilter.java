@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
 import com.example.domain.model.AppUserDetails;
 
@@ -25,6 +27,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
 		// リクエストの詳細をセットしておく
 		setDetails(request, authRequest);
+
+		// ログイン後、セッションIDを変更
+		SessionAuthenticationStrategy sessionStrategy = new ChangeSessionIdAuthenticationStrategy();
+		this.setSessionAuthenticationStrategy(sessionStrategy);
 
 		// 認証の実施
 		return this.getAuthenticationManager().authenticate(authRequest);
